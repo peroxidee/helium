@@ -28,7 +28,11 @@ var (
 
 func main() {
 	
-	for (short_name, desc, status) in servicelist:
-	print(short_name, desc, status) 
+	for short_name, desc, status := range servicelist{
+		print(short_name, desc, status) 
+
+	}
+
+	
 }
 
