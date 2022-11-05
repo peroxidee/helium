@@ -2,37 +2,42 @@ package main
 
 import (
 	"fmt"
-	"unsafe"
-	"golang.org/x/sys/windows"
+
+	wapi "github.com/iamacarpet/go-win64api"
 )
 
-// intializing the variables, calling the win32 apps dll ... helium is it's name
-var (
-	
-	helium   = windows.NewLazyDLL("user32.dll")
-    // how we can call functions
-    accessSCM = helium.NewProc("GENERIC_READ")
-	accessSrv = helium.NewProc("SC_MANAGER_ALL_ACCESS")
-
-
-	hscm = helium.NewProc("OpenSCManager(None, None, accessSCM)")	
-
-
-
-	serviceall = helium.NewProc("SERVICE_STATE_ALL")
-	servicetype = helium.NewProc("SERVICE_WIN32")
-	servicelist = helium.NewProc("EnumServicesStatusEx(hscm, servicetype, serviceall)")
-
-
-)
-
-func main() {
-	
-	for short_name, desc, status := range servicelist{
-		print(short_name, desc, status) 
-
-	}
-
-	
+type WindowService struct {
+	scn string
+	dn  string
+	st  string
+	as  bool
+	rp  uint32
 }
 
+// func neoserv(scname string, disname string, stattext string, accpt bool, pid int){
+
+// }
+
+func main() {
+	servslice := make([]WindowService, 0)
+	svc, err := wapi.GetServices()
+	if err != nil {
+		fmt.Printf("%s\r\n", err.Error())
+	}
+
+	for _, v := range svc {
+
+		helium := WindowService{
+			scn: v.SCName,
+			dn:  v.DisplayName,
+			st:  v.StatusText,
+			as:  v.AcceptStop,
+			rp:  v.RunningPid}
+
+		servslice = append(servslice, helium)
+
+		fmt.Printf("%-50s - %-75s - Status: %-20s - Accept Stop: %-5t, Running Pid: %d\r\n", v.SCName, v.DisplayName, v.StatusText, v.AcceptStop, v.RunningPid)
+	}
+	fmt.Printf(servslice)
+	return servslice
+}
