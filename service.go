@@ -38,6 +38,5 @@ func main() {
 
 		fmt.Printf("%-50s - %-75s - Status: %-20s - Accept Stop: %-5t, Running Pid: %d\r\n", v.SCName, v.DisplayName, v.StatusText, v.AcceptStop, v.RunningPid)
 	}
-	fmt.Printf(servslice)
 	return servslice
 }
